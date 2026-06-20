@@ -3,563 +3,562 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shadow Chat</title>
+    <title>Telegram Web Alpha</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
         :root {
-            --bg-main: #060913;
-            --bg-sidebar: #0b0f19;
-            --bg-chat: rgba(15, 23, 42, 0.6);
-            --bg-input: #1e293b;
-            --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.4);
-            --text-main: #f8fafc;
-            --text-muted: #64748b;
-            --danger: #ef4444;
-            --success: #10b981;
-            --radius: 14px;
+            --tg-bg: #0e1621;
+            --tg-sidebar: #17212b;
+            --tg-chat-bg: #182533;
+            --tg-active: #2b5278;
+            --tg-text: #f5f5f5;
+            --tg-muted: #7f91a4;
+            --tg-button: #5288c1;
+            --tg-input: #24303f;
+            --danger: #ec3b3b;
+            --radius: 12px;
         }
 
         * {
             box-sizing: border-box;
             margin: 0; padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg-main);
-            color: var(--text-main);
+            background: var(--tg-bg);
+            color: var(--tg-text);
             height: 100vh;
             overflow: hidden;
-            position: relative;
         }
 
-        /* Arka Plan Hareketli Animasyon Efekti */
-        body::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.1), transparent 40%),
-                        radial-gradient(circle at 70% 70%, rgba(192, 132, 252, 0.08), transparent 45%);
-            animation: aurora 20s linear infinite;
-            z-index: -1;
-        }
-        @keyframes aurora {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .app {
+        .tg-container {
             display: flex;
             height: 100vh;
             width: 100%;
-            position: relative;
-            backdrop-filter: blur(20px);
         }
 
-        /* Sidebar - Fütüristik Efektli */
+        /* Sol Menü - Sohbet Listesi */
         .sidebar {
-            width: 280px;
-            background: var(--bg-sidebar);
-            padding: 24px;
-            border-right: 1px solid rgba(255,255,255,0.05);
+            width: 320px;
+            background: var(--tg-sidebar);
+            border-right: 1px solid rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
-            z-index: 99;
-            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-            transition: transform 0.3s ease;
-        }
-        
-        .sidebar-brand {
-            font-size: 24px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #a5b4fc, #6366f1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 35px;
+            flex-shrink: 0;
+            z-index: 10;
         }
 
-        .channel-item {
-            padding: 14px 18px;
-            background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), transparent);
-            border-left: 3px solid var(--accent);
-            border-radius: 4px var(--radius) var(--radius) 4px;
-            font-weight: 600;
+        .search-container {
+            padding: 16px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-bar {
+            flex: 1;
+            background: var(--tg-input);
+            border: 2px solid transparent;
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            color: white;
+            outline: none;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .search-bar:focus {
+            border-color: var(--tg-button);
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .chat-item:hover {
+            background: rgba(255,255,255,0.03);
+        }
+        .chat-item.active {
+            background: var(--tg-active);
         }
 
-        /* Chat Bölümü */
-        .chat {
+        /* Profil Avatarları */
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+
+        .chat-info {
+            flex: 1;
+            overflow: hidden;
+        }
+        .chat-name-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        .chat-name {
+            font-weight: 600;
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-time {
+            font-size: 12px;
+            color: var(--tg-muted);
+        }
+        .chat-preview {
+            font-size: 13px;
+            color: var(--tg-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-item.active .chat-time,
+        .chat-item.active .chat-preview {
+            color: #d1d9e0;
+        }
+
+        /* Sağ Alan - Ana Sohbet Ekranı */
+        .main-chat {
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: var(--bg-chat);
-            height: 100vh;
+            background: var(--tg-chat-bg);
             position: relative;
         }
 
-        .header {
-            padding: 18px 24px;
-            background: rgba(11, 15, 25, 0.7);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+        .chat-header {
+            height: 60px;
+            background: var(--tg-sidebar);
+            padding: 0 20px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 14px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .menu-toggle {
+        .back-btn {
             display: none;
             background: none;
             border: none;
-            color: var(--text-main);
-            font-size: 24px;
+            color: var(--tg-button);
+            font-size: 20px;
             cursor: pointer;
+            padding-right: 8px;
         }
 
-        /* Mesaj Alanı ve Kusursuz Yaylanma Animasyonları */
-        .messages {
+        .messages-area {
             flex: 1;
             padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
             scroll-behavior: smooth;
         }
 
-        .message {
+        /* Balon Mesaj Stilleri */
+        .msg-wrapper {
+            display: flex;
+            gap: 8px;
+            max-width: 75%;
             opacity: 0;
-            animation: dynamicPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            max-width: 80%;
-            transition: transform 0.2s;
+            animation: slideIn 0.25s ease forwards;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
-        @keyframes dynamicPop {
-            from { opacity: 0; transform: translateY(15px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        .msg-wrapper.self {
+            align-self: flex-end;
+        }
+
+        .msg-bubble {
+            background: var(--tg-sidebar);
+            padding: 10px 14px;
+            border-radius: 4px 14px 14px 14px;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .msg-wrapper.self .msg-bubble {
+            background: #2b5278;
+            border-radius: 14px 14px 4px 14px;
+        }
+
+        .msg-sender {
+            font-size: 13px;
+            font-weight: 600;
+            color: #5288c1;
+            margin-bottom: 3px;
+        }
+        .msg-wrapper.self .msg-sender { display: none; }
+
+        .msg-text {
+            font-size: 14.5px;
+            line-height: 1.4;
+            word-break: break-word;
+            padding-right: 45px;
         }
 
         .msg-meta {
-            font-size: 13px;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            position: absolute;
+            bottom: 4px; right: 8px;
+            font-size: 10px;
+            color: var(--tg-muted);
         }
+        .msg-wrapper.self .msg-meta { color: #a2bccc; }
 
-        .msg-user {
-            font-weight: 700;
-            color: #c084fc;
-        }
-
-        .msg-time {
-            color: var(--text-muted);
-            font-size: 11px;
-        }
-
-        .msg-content {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 12px 18px;
-            border-radius: 4px var(--radius) var(--radius) var(--radius);
-            line-height: 1.5;
-            word-break: break-word;
-        }
-
-        .message:hover {
-            transform: translateX(3px);
-        }
-
-        /* Giriş ve Form Yapısı */
-        .input-area {
+        /* Girdi Alt Alanı */
+        .input-bar-container {
             padding: 16px 20px;
-            background: rgba(11, 15, 25, 0.8);
-            border-top: 1px solid rgba(255,255,255,0.05);
+            background: var(--tg-chat-bg);
             position: relative;
         }
 
-        .form-grid {
+        .input-form {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            gap: 12px;
+            align-items: flex-end;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
         }
 
-        input, textarea {
-            background: var(--bg-input);
-            border: 1px solid rgba(255,255,255,0.05);
-            color: white;
-            border-radius: var(--radius);
-            padding: 12px 16px;
-            font-size: 15px;
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        input:focus, textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
-
-        .input-row {
-            display: flex;
-            gap: 10px;
-        }
-
-        textarea {
+        .inputs-block {
             flex: 1;
-            resize: none;
-            height: 48px;
-        }
-
-        /* Efektli Butonlar */
-        button {
-            background: linear-gradient(135deg, var(--accent), #4f46e5);
-            color: white;
-            border: none;
-            padding: 12px 24px;
+            background: var(--tg-sidebar);
             border-radius: var(--radius);
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            transition: transform 0.1s, box-shadow 0.2s;
-        }
-
-        button:hover {
-            box-shadow: 0 4px 15px var(--accent-glow);
-        }
-        
-        button:active {
-            transform: scale(0.96);
-        }
-
-        /* Spam Engel Ekranı (Overlay Modu) */
-        .cooldown-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(6, 9, 19, 0.95);
-            backdrop-filter: blur(8px);
-            display: none;
+            padding: 10px 14px;
+            display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: var(--radius);
-            z-index: 10;
-            text-align: center;
-            padding: 10px;
+            gap: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
-        /* Modallar */
-        .modal {
+        .inputs-block input {
+            background: transparent; border: none; color: white;
+            font-size: 14px; outline: none; padding-bottom: 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .inputs-block textarea {
+            background: transparent; border: none; color: white;
+            font-size: 15px; outline: none; resize: none; height: 26px;
+        }
+
+        .send-btn {
+            background: var(--tg-button);
+            color: white; border: none;
+            width: 46px; height: 46px;
+            border-radius: 50%; cursor: pointer;
+            font-size: 18px; display: flex;
+            align-items: center; justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+            transition: transform 0.1s;
+        }
+        .send-btn:active { transform: scale(0.95); }
+
+        /* Spam Engel Ekranı */
+        .spam-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(23, 33, 43, 0.96);
+            display: none; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 20; text-align: center; padding: 20px;
+        }
+
+        /* Yönetici Paneli Modalı */
+        .tg-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 7, 18, 0.85);
-            backdrop-filter: blur(12px);
-            display: none; align-items: center; justify-content: center;
-            z-index: 1000;
+            background: rgba(0,0,0,0.6); display: none;
+            align-items: center; justify-content: center; z-index: 1000;
+        }
+        .tg-modal-content {
+            background: var(--tg-sidebar); padding: 24px;
+            border-radius: var(--radius); width: 90%; max-width: 400px;
+        }
+        .tg-modal-content input {
+            width: 100%; background: var(--tg-input); border: none;
+            padding: 12px; color: white; border-radius: 8px; margin-bottom: 12px; outline: none;
+        }
+        .tg-modal-content button {
+            width: 100%; padding: 12px; border-radius: 8px; border: none;
+            font-weight: 600; cursor: pointer; margin-bottom: 8px;
         }
 
-        .modal-content {
-            background: #0f172a;
-            border: 1px solid rgba(255,255,255,0.08);
-            padding: 30px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 420px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);
-        }
-
-        /* Mobil Optimizasyonları (Kusursuz Responsive) */
+        /* MOBIL DUYARLILIK REGLERİ */
         @media (max-width: 768px) {
-            .sidebar {
-                position: absolute; 
-                left: 0; top: 0; bottom: 0;
-                transform: translateX(-100%);
+            .sidebar { width: 100%; }
+            .main-chat {
+                position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                display: none;
             }
-            .sidebar.active { 
-                transform: translateX(0); 
-            }
-            .menu-toggle { 
-                display: block; 
-            }
-            .message { 
-                max-width: 90%; 
-            }
-            .header {
-                padding: 14px 20px;
-            }
+            .main-chat.active { display: flex; }
+            .back-btn { display: block; }
+            .msg-wrapper { max-width: 88%; }
         }
     </style>
 </head>
 <body>
-    <div class="app">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-brand">Shadow Chat</div>
-            <div class="channel-list" style="flex:1;">
-                <div class="channel-item"><span>#</span> genel-sohbet</div>
+
+    <div class="tg-container">
+        <div class="sidebar" id="sidebarContainer">
+            <div class="search-container">
+                <input type="text" class="search-bar" placeholder="Arama...">
+                <button onclick="openAdmin()" style="background:none; border:none; color:var(--tg-button); font-weight:600; cursor:pointer; font-size:13px;">PANEL</button>
             </div>
-            <button onclick="showAdminModal()" style="width:100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">Yönetici Paneli</button>
+            
+            <div class="chat-list">
+                <div class="chat-item active" onclick="switchChannel('genel', this)">
+                    <div class="avatar" style="background:#5288c1;">G</div>
+                    <div class="chat-info">
+                        <div class="chat-name-row">
+                            <span class="chat-name"># genel-sohbet</span>
+                            <span class="chat-time" id="time-genel">-</span>
+                        </div>
+                        <div class="chat-preview" id="preview-genel">Mesaj bulunmuyor.</div>
+                    </div>
+                </div>
+                <div class="chat-item" onclick="switchChannel('duyuru', this)">
+                    <div class="avatar" style="background:#e67e22;">D</div>
+                    <div class="chat-info">
+                        <div class="chat-name-row">
+                            <span class="chat-name">📢 Duyurular</span>
+                            <span class="chat-time" id="time-duyuru">-</span>
+                        </div>
+                        <div class="chat-preview" id="preview-duyuru">Önemli duyuru kanalı</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Chat Alanı -->
-        <div class="chat">
-            <div class="header">
-                <button class="menu-toggle" onclick="toggleSidebar(event)">☰</button>
-                <div style="font-size:18px; font-weight:700;"># genel-sohbet</div>
+        <div class="main-chat" id="chatContainer">
+            <div class="chat-header">
+                <button class="back-btn" onclick="goBackToList()">⬅</button>
+                <div class="avatar" id="headerAvatar" style="background:#5288c1; width:40px; height:40px; font-size:14px;">G</div>
+                <div>
+                    <div class="chat-name" id="headerTitle"># genel-sohbet</div>
+                    <div style="font-size:12px; color:var(--tg-muted);">bulut tabanlı veri odası</div>
+                </div>
             </div>
-            
-            <div id="messages" class="messages"></div>
-            
-            <div class="input-area">
-                <!-- Spam Koruma Kalkanı -->
-                <div id="cooldownOverlay" class="cooldown-overlay">
-                    <h4 style="color:var(--danger); margin-bottom:4px; font-weight:700;">⚠️ Spam Engeli</h4>
-                    <p style="color:var(--text-muted); font-size:13px;">Çok hızlısın! Kalan Süre: <span id="cooldownTimer" style="color:white; font-weight:700;">05:00</span></p>
+
+            <div id="messagesArea" class="messages-area"></div>
+
+            <div class="input-bar-container">
+                <div id="spamLayer" class="spam-layer">
+                    <h3 style="color:var(--danger); margin-bottom:6px;">⚠️ Kısıtlama Aktif</h3>
+                    <p style="color:var(--tg-muted); font-size:14px;">Çok hızlı işlem yapıyorsunuz. Kalan: <span id="spamTimer" style="color:white; font-weight:700;">05:00</span></p>
                 </div>
 
-                <form id="msgForm" class="form-grid">
-                    <input type="text" id="name" placeholder="İsim (Opsiyonel)" value="Anonim">
-                    <div class="input-row">
-                        <textarea id="message" placeholder="Mesaj yaz..." required></textarea>
-                        <button type="submit">Gönder</button>
+                <form id="tgForm" class="input-form">
+                    <div class="inputs-block">
+                        <input type="text" id="tgName" placeholder="İsminiz (Opsiyonel)" value="Anonim">
+                        <textarea id="tgMessage" placeholder="Mesaj yaz..." required></textarea>
                     </div>
+                    <button type="submit" class="send-btn">➤</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Admin Modal -->
-    <div id="adminModal" class="modal">
-        <div class="modal-content">
-            <h2 style="margin-bottom:20px; font-size:22px;">Giriş Yetkilendirmesi</h2>
-            <input type="text" id="username" value="admin" style="width:100%; margin-bottom:12px;">
-            <input type="password" id="password" placeholder="Şifre" style="width:100%; margin-bottom:24px;">
-            <button onclick="loginAdmin()" style="width:100%; margin-bottom:12px;">Giriş Yap</button>
-            <button onclick="closeModal()" style="background:#334155; width:100%;">İptal</button>
+    <div id="adminModal" class="tg-modal">
+        <div class="tg-modal-content">
+            <h3 style="margin-bottom:16px;">Yönetici Doğrulaması</h3>
+            <input type="text" id="adminUser" value="admin">
+            <input type="password" id="adminPass" placeholder="Sistem Şifresi">
+            <button onclick="submitAdmin()" style="background:var(--tg-button); color:white;">Giriş Yap</button>
+            <button onclick="closeAdmin()" style="background:#4f5d73; color:white;">Kapat</button>
             
-            <div id="adminPanel" style="display:none; margin-top:24px; border-top:1px solid rgba(255,255,255,0.1); padding-top:24px;">
-                <h3 style="margin-bottom:16px; font-size:16px;">Veri Yönetimi</h3>
-                <div style="display:flex; gap:12px; margin-bottom:16px;">
-                    <button onclick="exportToTxt()" style="background:var(--success); flex:1;">TXT İndir</button>
-                    <button onclick="clearAll()" style="background:var(--danger); flex:1;">Tümünü Sil</button>
-                </div>
-                <div id="adminMessages" style="max-height:200px; overflow-y:auto;"></div>
+            <div id="adminInner" style="display:none; margin-top:16px; border-top:1px solid rgba(255,255,255,0.1); padding-top:16px;">
+                <button onclick="exportData()" style="background:#2ecc71; color:white;">TXT Yedek Al</button>
+                <button onclick="wipeData()" style="background:var(--danger); color:white;">Tüm Sistemi Sıfırla</button>
+                <div id="adminLogs" style="max-height:180px; overflow-y:auto; margin-top:12px;"></div>
             </div>
         </div>
     </div>
 
     <script>
-        const STORAGE_KEY = 'shadowMessages';
-        
-        let messageTimestamps = []; 
-        let isBanned = false;
-        let banEndTime = 0;
-        let countdownInterval;
+        const DB_KEY = 'tgMessagesCloud';
+        let currentRoom = 'genel';
+        let spamTimestamps = [];
+        let banEnd = 0;
+        let spamInterval;
 
-        function toggleSidebar(e) {
-            e.stopPropagation();
-            document.getElementById('sidebar').classList.toggle('active');
+        function getCloud() {
+            return JSON.parse(localStorage.getItem(DB_KEY)) || { genel: [], duyuru: [] };
         }
 
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        function setCloud(data) {
+            localStorage.setItem(DB_KEY, JSON.stringify(data));
         }
 
-        // Akıllı Spam Filtresi
-        function checkSpamLimit() {
-            const now = Date.now();
+        function escapeText(text) {
+            return text.replace(/[&<>'"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[m]));
+        }
+
+        function getColorByRoom(room) {
+            return room === 'genel' ? '#5288c1' : '#e67e22';
+        }
+
+        function switchChannel(room, element) {
+            currentRoom = room;
+            document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
+            if(element) element.classList.add('active');
+
+            const title = room === 'genel' ? '# genel-sohbet' : '📢 Duyurular';
+            document.getElementById('headerTitle').innerText = title;
             
-            if (isBanned) {
-                if (now >= banEndTime) {
-                    isBanned = false;
-                    localStorage.removeItem('shadow_ban_time');
-                    document.getElementById('cooldownOverlay').style.display = 'none';
-                    clearInterval(countdownInterval);
-                } else {
-                    return false;
-                }
+            const headerAv = document.getElementById('headerAvatar');
+            headerAv.innerText = title.charAt(2);
+            headerAv.style.background = getColorByRoom(room);
+
+            if(window.innerWidth <= 768) {
+                document.getElementById('chatContainer').classList.add('active');
             }
+            renderMessages();
+        }
 
-            messageTimestamps = messageTimestamps.filter(timestamp => now - timestamp < 10000);
-            messageTimestamps.push(now);
+        function goBackToList() {
+            document.getElementById('chatContainer').classList.remove('active');
+        }
 
-            if (messageTimestamps.length > 20) {
-                isBanned = true;
-                banEndTime = now + (5 * 60 * 1000); 
-                localStorage.setItem('shadow_ban_time', banEndTime);
-                startBanCountdown();
+        function renderMessages() {
+            const db = getCloud();
+            const container = document.getElementById('messagesArea');
+            container.innerHTML = '';
+
+            const currentName = document.getElementById('tgName').value.trim() || 'Anonim';
+            const roomMsgs = db[currentRoom] || [];
+
+            roomMsgs.forEach(msg => {
+                const isSelf = msg.name === currentName;
+                const wrapper = document.createElement('div');
+                wrapper.className = `msg-wrapper ${isSelf ? 'self' : ''}`;
+                
+                wrapper.innerHTML = `
+                    <div class="msg-bubble">
+                        <div class="msg-sender">${escapeText(msg.name)}</div>
+                        <div class="msg-text">${msg.text}</div>
+                        <div class="msg-meta">${msg.time}</div>
+                    </div>
+                `;
+                container.appendChild(wrapper);
+            });
+            container.scrollTop = container.scrollHeight;
+            updatePreviews(db);
+        }
+
+        function updatePreviews(db) {
+            ['genel', 'duyuru'].forEach(r => {
+                const list = db[r] || [];
+                if(list.length > 0) {
+                    const last = list[list.length - 1];
+                    document.getElementById(`preview-${r}`).innerText = `${last.name}: ${last.text.replace(/<br>/g, ' ')}`;
+                    document.getElementById(`time-${r}`).innerText = last.time;
+                } else {
+                    document.getElementById(`preview-${r}`).innerText = "Mesaj bulunmuyor.";
+                    document.getElementById(`time-${r}`).innerText = "-";
+                }
+            });
+        }
+
+        // Spam Limitleyici Mekanizması
+        function checkSpam() {
+            const now = Date.now();
+            if (now < banEnd) return false;
+
+            spamTimestamps = spamTimestamps.filter(t => now - t < 10000);
+            spamTimestamps.push(now);
+
+            if (spamTimestamps.length > 20) {
+                banEnd = now + (5 * 60 * 1000);
+                localStorage.setItem('tg_ban_end', banEnd);
+                triggerSpamLock();
                 return false;
             }
-
             return true;
         }
 
-        function startBanCountdown() {
-            document.getElementById('cooldownOverlay').style.display = 'flex';
-            if(countdownInterval) clearInterval(countdownInterval);
+        function triggerSpamLock() {
+            document.getElementById('spamLayer').style.display = 'flex';
+            if(spamInterval) clearInterval(spamInterval);
 
-            countdownInterval = setInterval(() => {
-                const now = Date.now();
-                const remaining = banEndTime - now;
-
-                if (remaining <= 0) {
-                    isBanned = false;
-                    localStorage.removeItem('shadow_ban_time');
-                    document.getElementById('cooldownOverlay').style.display = 'none';
-                    clearInterval(countdownInterval);
+            spamInterval = setInterval(() => {
+                const remaining = banEnd - Date.now();
+                if(remaining <= 0) {
+                    document.getElementById('spamLayer').style.display = 'none';
+                    clearInterval(spamInterval);
                 } else {
                     const m = Math.floor(remaining / 60000).toString().padStart(2, '0');
                     const s = Math.floor((remaining % 60000) / 1000).toString().padStart(2, '0');
-                    document.getElementById('cooldownTimer').innerText = `${m}:${s}`;
+                    document.getElementById('spamTimer').innerText = `${m}:${s}`;
                 }
             }, 1000);
         }
 
-        function checkExistingBan() {
-            const savedBan = localStorage.getItem('shadow_ban_time');
-            if (savedBan) {
-                const now = Date.now();
-                if (now < parseInt(savedBan)) {
-                    isBanned = true;
-                    banEndTime = parseInt(savedBan);
-                    startBanCountdown();
-                } else {
-                    localStorage.removeItem('shadow_ban_time');
-                }
-            }
-        }
-
-        function loadMessages() {
-            const msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            const container = document.getElementById('messages');
-            container.innerHTML = '';
-            
-            msgs.forEach((msg, i) => {
-                const div = document.createElement('div');
-                div.className = 'message';
-                
-                div.innerHTML = `
-                    <div class="msg-meta">
-                        <span class="msg-user">${escapeHTML(msg.name)}</span>
-                        <span class="msg-time">${msg.time}</span>
-                    </div>
-                    <div class="msg-content">${msg.text}</div>
-                `;
-                container.appendChild(div);
-            });
-            container.scrollTop = container.scrollHeight;
-        }
-
-        // Form Gönderme İşlemi Tamamen Düzeltildi
-        document.getElementById('msgForm').addEventListener('submit', function(e) {
+        document.getElementById('tgForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            if (!checkSpamLimit()) return;
+            if(!checkSpam()) return;
 
-            const nameInput = document.getElementById('name');
-            const messageInput = document.getElementById('message');
-            
+            const nameInput = document.getElementById('tgName');
+            const msgInput = document.getElementById('tgMessage');
+
             const name = nameInput.value.trim() || 'Anonim';
-            const text = messageInput.value.trim();
-            
-            if (text) {
-                let msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-                msgs.push({
+            const text = msgInput.value.trim();
+
+            if(text) {
+                let db = getCloud();
+                db[currentRoom].push({
                     name: name,
-                    text: escapeHTML(text).replace(/\n/g, '<br>'),
+                    text: escapeText(text).replace(/\n/g, '<br>'),
                     time: new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'})
                 });
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
-                loadMessages();
-                messageInput.value = '';
+                setCloud(db);
+                renderMessages();
+                msgInput.value = '';
             }
         });
 
-        function showAdminModal() {
-            document.getElementById('adminModal').style.display = 'flex';
-            setTimeout(() => { document.getElementById('password').value = 'shadow2026'; }, 200);
-        }
-
-        function loginAdmin() {
-            if (document.getElementById('username').value === 'admin' && document.getElementById('password').value === 'shadow2026') {
-                document.getElementById('adminPanel').style.display = 'block';
-                loadAdminMessages();
+        // Yönetici Modülleri
+        function openAdmin() { document.getElementById('adminModal').style.display = 'flex'; setTimeout(() => { document.getElementById('adminPass').value = 'shadow2026'; }, 200); }
+        function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; document.getElementById('adminInner').style.display = 'none'; }
+        
+        function submitAdmin() {
+            if(document.getElementById('adminUser').value === 'admin' && document.getElementById('adminPass').value === 'shadow2026') {
+                document.getElementById('adminInner').style.display = 'block';
+                loadLogs();
             } else {
-                alert('❌ Yetkisiz Erişim!');
-                closeModal();
+                alert('Erişim Engellendi.');
+                closeAdmin();
             }
         }
 
-        function loadAdminMessages() {
-            const msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            const container = document.getElementById('adminMessages');
+        function loadLogs() {
+            const db = getCloud();
+            const container = document.getElementById('adminLogs');
             container.innerHTML = '';
             
-            msgs.slice().reverse().forEach((msg, idx) => {
-                const realIndex = msgs.length - 1 - idx;
-                const div = document.createElement('div');
-                div.style.cssText = "background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; margin-bottom:8px; border:1px solid rgba(255,255,255,0.05);";
-                div.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <strong>${escapeHTML(msg.name)}</strong>
-                        <button onclick="deleteMsg(${realIndex})" style="background:var(--danger); padding:2px 8px; font-size:11px;">Sil</button>
-                    </div>
-                    <div style="color:var(--text-muted); font-size:13px; margin-top:4px;">${msg.text}</div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        window.deleteMsg = function(index) {
-            let msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            msgs.splice(index, 1);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
-            loadMessages();
-            loadAdminMessages();
-        };
-
-        function exportToTxt() {
-            const msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            let txt = "Shadow Chat Log\n\n";
-            msgs.forEach(m => txt += `${m.name} [${m.time}]: ${m.text.replace(/<br>/g, '\n')}\n---\n`);
-            const blob = new Blob([txt], {type: 'text/plain;charset=utf-8'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'chat_logs.txt';
-            a.click();
-        }
-
-        function clearAll() {
-            if (confirm('Tüm verileri silmek istediğine emin misin?')) {
-                localStorage.removeItem(STORAGE_KEY);
-                loadMessages();
-                loadAdminMessages();
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('adminModal').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'none';
-            document.getElementById('password').value = '';
-        }
-
-        // Mobil Tıklama Kontrolü
-        document.addEventListener('click', function(e) {
-            const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
-                if (!sidebar.contains(e.target)) {
-                    sidebar.classList.remove('active');
-                }
-            }
-        });
-
-        window.onload = () => {
-            checkExistingBan();
-            loadMessages();
-        };
-    </script>
-</body>
-</html>
+            const all = [...(db.genel 
