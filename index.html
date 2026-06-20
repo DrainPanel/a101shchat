@@ -3,84 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shadow Chat</title>
+    <title>Shadow Chat — Private & Secure</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --bg-main: #0b0f19;
+            --bg-sidebar: #111827;
+            --bg-chat: #1f2937;
+            --bg-input: #374151;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --danger: #ef4444;
+            --success: #10b981;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0; padding: 0;
+            transition: background 0.2s, transform 0.1s;
+        }
         
         body {
-            margin: 0; padding: 0; font-family: 'Inter', sans-serif;
-            background: #0f0f0f; color: #dcddde; height: 100vh; overflow: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
         }
+
         .app {
-            display: flex; height: 100vh;
+            display: flex;
+            height: 100vh;
+            position: relative;
         }
+
+        /* Sidebar Geliştirmeleri */
         .sidebar {
-            width: 240px; background: #202225; padding: 20px; border-right: 1px solid #292b2f;
-            animation: slideIn 0.4s ease;
+            width: 280px;
+            background: var(--bg-sidebar);
+            padding: 24px;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            z-index: 99;
         }
+        
+        .sidebar-brand {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(45deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .channel-list {
+            flex: 1;
+        }
+
+        .channel-item {
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: var(--radius);
+            font-weight: 500;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Chat Alanı */
         .chat {
-            flex: 1; display: flex; flex-direction: column; background: #36393f;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-chat);
+            position: relative;
         }
+
         .header {
-            padding: 15px 20px; background: #2f3136; border-bottom: 1px solid #292b2f;
-            font-weight: 600; font-size: 18px;
+            padding: 18px 24px;
+            background: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+        }
+
         .messages {
-            flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            scroll-behavior: smooth;
         }
+
+        /* Modern Mesaj Balonları */
         .message {
-            opacity: 0; animation: fadeInUp 0.4s forwards;
-            max-width: 70%;
+            opacity: 0;
+            animation: cubicBezierUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            max-width: 80%;
+            align-self: flex-start;
         }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
-        
+
+        @keyframes cubicBezierUp {
+            from { opacity: 0; transform: translateY(16px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .msg-meta {
+            font-size: 13px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .msg-user {
+            font-weight: 600;
+            color: #a5b4fc;
+        }
+
+        .msg-time {
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
         .msg-content {
-            background: #292b2f; padding: 12px 16px; border-radius: 8px; display: inline-block;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255,255,255,0.02);
+            padding: 12px 18px;
+            border-radius: 4px var(--radius) var(--radius) var(--radius);
+            line-height: 1.5;
+            word-break: break-word;
         }
+
+        /* Girdi Alanı */
         .input-area {
-            padding: 15px; background: #2f3136; border-top: 1px solid #292b2f;
+            padding: 20px 24px;
+            background: rgba(17, 24, 39, 0.4);
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
+
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         input, textarea {
-            background: #40444b; border: none; color: white; border-radius: 8px; padding: 12px;
-            width: 100%; font-size: 16px;
+            background: var(--bg-input);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: white;
+            border-radius: var(--radius);
+            padding: 14px;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
         }
+
+        input:focus, textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        textarea {
+            flex: 1;
+            resize: none;
+            height: 50px;
+        }
+
         button {
-            background: #5865f2; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;
-            transition: all 0.2s;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
         }
-        button:hover { background: #4752c4; transform: scale(1.05); }
-        
+
+        button:hover { background: var(--accent-hover); }
+        button:active { transform: scale(0.97); }
+
+        /* Modal Tasarımı */
         .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85);
-            display: none; align-items: center; justify-content: center; z-index: 1000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 7, 18, 0.8);
+            backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 1000;
         }
+
         .modal-content {
-            background: #2f3136; padding: 30px; border-radius: 12px; width: 380px; text-align: center;
-            animation: popIn 0.3s;
+            background: var(--bg-sidebar);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 32px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 440px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        @keyframes popIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .modal-content h2 { margin-bottom: 20px; font-size: 22px; font-weight: 700; }
+
+        /* Admin Tablosu & Mesaj Yönetimi */
+        #adminPanel {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 24px;
+            padding-top: 24px;
+        }
+
+        .admin-actions {
+            display: flex; gap: 10px; margin-bottom: 15px;
+        }
+
+        .admin-msg-item {
+            background: rgba(255,255,255,0.02);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Mobil Uyumluluk Kuralları */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                transition: left 0.3s ease;
+            }
+            .sidebar.active {
+                left: 0;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .message {
+                max-width: 90%;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="app">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <h2 style="color:#5865f2;">🔥 Shadow Chat</h2>
-            <p style="color:#72767d; margin:20px 0;">Genel Sohbet</p>
-            <button onclick="showAdminModal()" style="width:100%; margin-top:20px;">👑 Admin Panel</button>
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-brand">Shadow Chat</div>
+            <div class="channel-list">
+                <div class="channel-item">
+                    <span>#</span> genel-sohbet
+                </div>
+            </div>
+            <button onclick="showAdminModal()" style="width:100%; background: rgba(255,255,255,0.05); color: var(--text-main);">Panel</button>
         </div>
 
         <!-- Chat Area -->
         <div class="chat">
-            <div class="header">🟢 Herkesin Yazabildiği Alan</div>
+            <div class="header">
+                <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                <div># genel-sohbet</div>
+                <div style="font-size: 13px; color: var(--success); font-weight: 500;">● Online</div>
+            </div>
+            
             <div id="messages" class="messages"></div>
             
             <div class="input-area">
-                <form id="msgForm">
-                    <input type="text" id="name" placeholder="İsim (opsiyonel)" value="Anonim" style="margin-bottom:8px;">
-                    <div style="display:flex; gap:10px;">
-                        <textarea id="message" rows="2" placeholder="Mesaj yaz..." required></textarea>
+                <form id="msgForm" class="form-grid">
+                    <input type="text" id="name" placeholder="Takma adın (Opsiyonel)" value="Anonim">
+                    <div class="input-row">
+                        <textarea id="message" placeholder="Mesajını buraya bırak..." required></textarea>
                         <button type="submit">Gönder</button>
                     </div>
                 </form>
@@ -91,35 +315,52 @@
     <!-- Admin Modal -->
     <div id="adminModal" class="modal">
         <div class="modal-content">
-            <h2>👑 Admin Panel</h2>
-            <input type="text" id="username" placeholder="Kullanıcı adı" value="admin"><br><br>
-            <input type="password" id="password" placeholder="Şifre"><br><br>
-            <button onclick="loginAdmin()" style="width:100%; margin:10px 0;">Giriş Yap</button>
-            <button onclick="closeModal()" style="background:#72767d; width:100%;">Kapat</button>
+            <h2>Yönetici Girişi</h2>
+            <input type="text" id="username" placeholder="Kullanıcı adı" value="admin" style="width:100%; margin-bottom:12px;">
+            <input type="password" id="password" placeholder="Şifre" style="width:100%; margin-bottom:20px;">
+            <button onclick="loginAdmin()" style="width:100%; margin-bottom:10px;">Giriş Yap</button>
+            <button onclick="closeModal()" style="background:#4b5563; width:100%;">Kapat</button>
             
-            <div id="adminPanel" style="display:none; margin-top:20px; text-align:left;">
-                <h3>Tüm Mesajlar</h3>
-                <button onclick="exportToTxt()" style="background:#43b581; margin:5px;">TXT İndir</button>
-                <button onclick="clearAll()" style="background:#f04747;">Tümünü Sil</button>
-                <div id="adminMessages" style="max-height:400px; overflow-y:auto; margin-top:15px;"></div>
+            <div id="adminPanel" style="display:none;">
+                <h3 style="margin-bottom:15px; font-size:16px;">Mesaj Kontrolü</h3>
+                <div class="admin-actions">
+                    <button onclick="exportToTxt()" style="background:var(--success); flex:1;">TXT Çıktısı</button>
+                    <button onclick="clearAll()" style="background:var(--danger); flex:1;">Hepsini Sil</button>
+                </div>
+                <div id="adminMessages" style="max-height:260px; overflow-y:auto; padding-right:5px;"></div>
             </div>
         </div>
     </div>
 
     <script>
         const STORAGE_KEY = 'shadowMessages';
-        let isAdminLogged = false;
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        // Güvenli mesaj yazdırmak için XSS koruma fonksiyonu
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
 
         function loadMessages() {
             const msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             const container = document.getElementById('messages');
             container.innerHTML = '';
+            
             msgs.forEach((msg, i) => {
                 const div = document.createElement('div');
                 div.className = 'message';
-                div.style.animationDelay = (i * 0.05) + 's';
+                div.style.animationDelay = `${i * 0.03}s`;
+                
                 div.innerHTML = `
-                    <strong style="color:#00b0f4;">\( {msg.name}</strong> <span style="color:#72767d; font-size:0.8em;"> \){msg.time}</span>
+                    <div class="msg-meta">
+                        <span class="msg-user">${escapeHTML(msg.name)}</span>
+                        <span class="msg-time">${msg.time}</span>
+                    </div>
                     <div class="msg-content">${msg.text}</div>
                 `;
                 container.appendChild(div);
@@ -130,9 +371,9 @@
         function saveMessage(name, text) {
             let msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             msgs.push({
-                name: name || 'Anonim',
-                text: text.replace(/\n/g, '<br>'),
-                time: new Date().toLocaleString('tr-TR')
+                name: name.trim() || 'Anonim',
+                text: escapeHTML(text).replace(/\n/g, '<br>'),
+                time: new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'})
             });
             localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
             loadMessages();
@@ -150,10 +391,9 @@
 
         function showAdminModal() {
             document.getElementById('adminModal').style.display = 'flex';
-            // Senin için otomatik şifre doldur (diğerleri boş görür)
             setTimeout(() => {
                 document.getElementById('password').value = 'shadow2026';
-            }, 300);
+            }, 200);
         }
 
         function loginAdmin() {
@@ -161,11 +401,10 @@
             const pass = document.getElementById('password').value;
             
             if (user === 'admin' && pass === 'shadow2026') {
-                isAdminLogged = true;
                 document.getElementById('adminPanel').style.display = 'block';
                 loadAdminMessages();
             } else {
-                alert('❌ Erişim reddedildi!');
+                alert('❌ Hatalı Giriş!');
                 closeModal();
             }
         }
@@ -174,14 +413,17 @@
             const msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             const container = document.getElementById('adminMessages');
             container.innerHTML = '';
-            msgs.reverse().forEach((msg, idx) => {
+            
+            msgs.slice().reverse().forEach((msg, idx) => {
                 const realIndex = msgs.length - 1 - idx;
                 const div = document.createElement('div');
-                div.style.marginBottom = '15px';
+                div.className = 'admin-msg-item';
                 div.innerHTML = `
-                    <strong>${msg.name}</strong> - ${msg.time}<br>
-                    <span style="color:#dcddde;">${msg.text}</span><br>
-                    <button onclick="deleteMsg(${realIndex})" style="background:#f04747; padding:4px 10px; font-size:12px;">Sil</button>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                        <strong>${escapeHTML(msg.name)}</strong>
+                        <button onclick="deleteMsg(${realIndex})" style="background:var(--danger); padding:2px 8px; font-size:11px; border-radius:4px;">Sil</button>
+                    </div>
+                    <div style="color:var(--text-muted); font-size:13px;">${msg.text}</div>
                 `;
                 container.appendChild(div);
             });
@@ -197,17 +439,17 @@
 
         function exportToTxt() {
             const msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            let txt = "Shadow Chat - Tüm Mesajlar\n\n";
-            msgs.forEach(m => txt += `${m.name} - \( {m.time}\n \){m.text}\n\n---\n\n`);
-            const blob = new Blob([txt], {type: 'text/plain'});
+            let txt = "Shadow Chat - Veri Yedekleme\n\n";
+            msgs.forEach(m => txt += `${m.name} [${m.time}]: ${m.text.replace(/<br>/g, '\n')}\n---\n`);
+            const blob = new Blob([txt], {type: 'text/plain;charset=utf-8'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = 'shadow_chat_mesajlar.txt';
+            a.download = 'shadow_chat_logs.txt';
             a.click();
         }
 
         function clearAll() {
-            if (confirm('Tüm mesajlar silinsin mi?')) {
+            if (confirm('Tüm geçmişi kalıcı olarak temizlemek istediğine emin misin?')) {
                 localStorage.removeItem(STORAGE_KEY);
                 loadMessages();
                 loadAdminMessages();
@@ -219,6 +461,15 @@
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('password').value = '';
         }
+
+        // Sayfa dışına tıklandığında sol menüyü kapat (Mobil için UX konforu)
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.querySelector('.menu-toggle');
+            if (window.innerWidth <= 768 && !sidebar.contains(e.target) && e.target !== toggleBtn) {
+                sidebar.classList.remove('active');
+            }
+        });
 
         window.onload = () => {
             loadMessages();
