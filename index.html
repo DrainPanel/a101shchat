@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shadow Telegram</title>
+    <title>Telegram</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
         
         :root {
             --tg-bg: #0e1621;
@@ -17,8 +17,6 @@
             --tg-muted: #7f91a4;
             --tg-button: #5288c1;
             --danger: #ec3b3b;
-            --success: #2ecc71;
-            --radius: 14px;
         }
 
         * {
@@ -28,73 +26,58 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        body {
+        body, html {
             background: var(--tg-bg);
             color: var(--tg-text);
-            height: 100vh;
+            height: 100%;
+            width: 100%;
             overflow: hidden;
+            position: fixed;
         }
 
         .tg-layout {
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: 100%;
             width: 100%;
             background: var(--tg-chat-bg);
-            position: relative;
         }
 
-        /* Üst Header Alanı */
+        /* Üst Header */
         .tg-header {
-            height: 60px;
+            height: 56px;
             background: var(--tg-header);
-            padding: 0 20px;
+            padding: 0 16px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
             border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
             z-index: 10;
+            flex-shrink: 0;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        /* Sol Üst Üç Çizgi Butonu */
         .menu-btn {
             background: none;
             border: none;
             color: var(--tg-text);
-            font-size: 22px;
+            font-size: 24px;
             cursor: pointer;
-            padding: 4px;
+            padding: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s;
-        }
-        .menu-btn:active {
-            transform: scale(0.9);
         }
 
-        .chat-title {
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        /* Açılır Yan Menü (Sidebar) */
+        /* Açılır Yan Menü */
         .drawer-menu {
             position: fixed;
-            top: 0; left: -260px;
-            width: 260px; height: 100%;
+            top: 0; left: -280px;
+            width: 280px; height: 100%;
             background: var(--tg-header);
             box-shadow: 5px 0 25px rgba(0,0,0,0.5);
             z-index: 100;
-            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 24px 16px;
+            transition: left 0.25s ease;
+            padding: 20px 16px;
         }
         .drawer-menu.open {
             left: 0;
@@ -105,46 +88,33 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(255,255,255,0.02);
-            transition: background 0.2s;
-        }
-        .drawer-item:hover {
-            background: rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03);
+            margin-top: 10px;
         }
 
-        /* Karartma Perdesi */
         .overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.5);
             z-index: 90;
             display: none;
         }
 
-        /* Mesaj Alanı Akışı */
+        /* Mesaj Alanı */
         .messages-area {
             flex: 1;
-            padding: 20px;
+            padding: 16px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            scroll-behavior: smooth;
+            gap: 8px;
+            -webkit-overflow-scrolling: touch;
         }
 
         .msg-wrapper {
             display: flex;
             flex-direction: column;
-            max-width: 75%;
-            opacity: 0;
-            animation: telegramPop 0.2s ease forwards;
-        }
-        @keyframes telegramPop {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            max-width: 85%;
         }
 
         .msg-wrapper.self {
@@ -155,33 +125,31 @@
         }
 
         .msg-bubble {
-            padding: 10px 14px;
-            position: relative;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+            padding: 8px 12px;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.15);
             word-break: break-word;
         }
         
         .msg-wrapper.self .msg-bubble {
             background: var(--tg-bubble-self);
-            border-radius: 14px 14px 4px 14px;
+            border-radius: 12px 12px 3px 12px;
         }
         .msg-wrapper.other .msg-bubble {
             background: var(--tg-header);
-            border-radius: 4px 14px 14px 14px;
+            border-radius: 3px 12px 12px 12px;
         }
 
         .msg-sender {
             font-size: 13px;
-            font-weight: 700;
+            font-weight: 600;
             color: #5288c1;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
         .msg-wrapper.self .msg-sender { display: none; }
 
         .msg-text {
-            font-size: 14.5px;
+            font-size: 15px;
             line-height: 1.4;
-            padding-bottom: 2px;
         }
 
         .msg-meta {
@@ -190,62 +158,59 @@
             color: var(--tg-muted);
             margin-top: 2px;
         }
-        .msg-wrapper.self .msg-meta { color: #a2bccc; }
 
-        /* Mesaj Gönderme Alanı */
+        /* Giriş ve Gönderme Alanı */
         .input-container {
-            padding: 14px 16px;
+            padding: 10px 12px;
             background: var(--tg-chat-bg);
+            flex-shrink: 0;
+            position: relative;
         }
 
         .input-form {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: flex-end;
-            max-width: 800px;
-            margin: 0 auto;
             width: 100%;
         }
 
         .input-block {
             flex: 1;
             background: var(--tg-header);
-            border-radius: var(--radius);
-            padding: 10px 14px;
+            border-radius: 18px;
+            padding: 8px 14px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            gap: 4px;
         }
 
         .input-block input {
             background: transparent; border: none; color: white;
-            font-size: 13px; outline: none; padding-bottom: 4px;
+            font-size: 12px; outline: none; padding-bottom: 4px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .input-block textarea {
             background: transparent; border: none; color: white;
-            font-size: 15px; outline: none; resize: none; height: 24px;
+            font-size: 15px; outline: none; resize: none; height: 22px;
         }
 
         .send-btn {
             background: var(--tg-button);
             color: white; border: none;
-            width: 44px; height: 44px;
+            width: 40px; height: 40px;
             border-radius: 50%; cursor: pointer;
             font-size: 16px; display: flex;
             align-items: center; justify-content: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
             flex-shrink: 0;
         }
 
-        /* Spam Engel Katmanı */
+        /* Spam Engel Ekranı */
         .spam-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(14, 22, 33, 0.97);
+            background: rgba(14, 22, 33, 0.98);
             display: none; flex-direction: column;
             align-items: center; justify-content: center;
-            z-index: 30; text-align: center; padding: 20px;
+            z-index: 30; text-align: center;
         }
 
         /* Modallar */
@@ -253,86 +218,79 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); display: none;
             align-items: center; justify-content: center; z-index: 1000;
+            padding: 16px;
         }
         .tg-modal-content {
-            background: var(--tg-header); padding: 24px;
-            border-radius: var(--radius); width: 90%; max-width: 400px;
+            background: var(--tg-header); padding: 20px;
+            border-radius: 12px; width: 100%; max-width: 360px;
         }
         .tg-modal-content input {
             width: 100%; background: var(--tg-bg); border: none;
-            padding: 12px; color: white; border-radius: 8px; margin-bottom: 12px; outline: none;
+            padding: 12px; color: white; border-radius: 8px; margin-bottom: 10px; outline: none;
         }
         .tg-modal-content button {
             width: 100%; padding: 12px; border-radius: 8px; border: none;
             font-weight: 600; cursor: pointer; margin-bottom: 8px;
-        }
-
-        @media (max-width: 768px) {
-            .msg-wrapper { max-width: 85%; }
-            .input-container { padding: 10px; }
         }
     </style>
 </head>
 <body>
 
     <div class="tg-layout">
+        <!-- HEADER -->
         <div class="tg-header">
-            <div class="header-left">
-                <button class="menu-btn" onclick="openDrawer()">☰</button>
-                <div class="chat-title">Shadow Chat</div>
-            </div>
-            <div style="font-size: 12px; color: var(--success);">online</div>
+            <button class="menu-btn" onclick="openDrawer()">☰</button>
         </div>
 
+        <!-- MESAJ ALANI -->
         <div id="messagesArea" class="messages-area"></div>
 
+        <!-- GİRİŞ ALANI -->
         <div class="input-container">
             <div id="spamLayer" class="spam-layer">
-                <h3 style="color:var(--danger); margin-bottom:6px;">⚠️ Limit Aşıldı</h3>
-                <p style="color:var(--tg-muted);">Çok hızlı mesaj gönderiyorsun. Kalan süre: <span id="spamTimer" style="color:white; font-weight:700;">05:00</span></p>
+                <p style="color:var(--danger); font-weight:600;">Kısıtlama Aktif</p>
+                <p style="color:var(--tg-muted); font-size:13px;">Kalan Süre: <span id="spamTimer" style="color:white;">05:00</span></p>
             </div>
 
             <form id="chatForm" class="input-form">
                 <div class="input-block">
-                    <input type="text" id="userName" placeholder="Kullanıcı Adı (Opsiyonel)" value="Anonim">
-                    <textarea id="userMsg" placeholder="Mesaj yaz..." required></textarea>
+                    <input type="text" id="userName" placeholder="Kullanıcı Adı" value="Anonim">
+                    <textarea id="userMsg" placeholder="Mesaj" required></textarea>
                 </div>
                 <button type="submit" class="send-btn">➤</button>
             </form>
         </div>
     </div>
 
+    <!-- AÇILIR YAN MENÜ -->
     <div class="overlay" id="menuOverlay" onclick="closeDrawer()"></div>
     <div class="drawer-menu" id="drawerMenu">
-        <h3 style="margin-bottom: 24px; color: var(--tg-button);">Menü</h3>
-        <div class="drawer-item" onclick="triggerAdminModal()">
-            ⚙️ Admin Paneli
-        </div>
+        <div class="drawer-item" onclick="triggerAdminModal()">⚙️ Admin Paneli</div>
     </div>
 
+    <!-- ADMIN MODAL -->
     <div id="adminModal" class="tg-modal">
         <div class="tg-modal-content">
-            <h3 style="margin-bottom:16px;">Yönetici Girişi</h3>
+            <h4 style="margin-bottom:14px;">Yönetici Girişi</h4>
             <input type="text" id="adminUser" value="admin">
             <input type="password" id="adminPass" placeholder="Şifre">
             <button onclick="loginAdmin()" style="background:var(--tg-button); color:white;">Giriş Yap</button>
             <button onclick="closeAdminModal()" style="background:#4f5d73; color:white;">Kapat</button>
             
-            <div id="adminPanel" style="display:none; margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:16px;">
-                <button onclick="downloadBackup()" style="background:var(--success); color:white;">TXT İndir</button>
+            <div id="adminPanel" style="display:none; margin-top:16px; border-top:1px solid rgba(255,255,255,0.1); padding-top:12px;">
+                <button onclick="downloadBackup()" style="background:#2ecc71; color:white;">TXT Yedek Al</button>
                 <button onclick="clearSystem()" style="background:var(--danger); color:white;">Tüm Mesajları Sil</button>
-                <div id="adminMessages" style="max-height:160px; overflow-y:auto; margin-top:12px;"></div>
+                <div id="adminMessages" style="max-height:140px; overflow-y:auto; margin-top:10px;"></div>
             </div>
         </div>
     </div>
 
     <script>
-        const STORAGE_KEY = 'pureTelegramMessages';
+        const STORAGE_KEY = 'telegramSystemDB';
         let spamTimestamps = [];
         let banEndTime = 0;
         let spamTimerInterval;
 
-        // Drawer (Yan Menü) Kontrolleri
         function openDrawer() {
             document.getElementById('drawerMenu').classList.add('open');
             document.getElementById('menuOverlay').style.display = 'block';
@@ -346,7 +304,6 @@
             return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
         }
 
-        // Mesajları Yükleme Fonksiyonu (Tamamen Stabilize Edildi)
         function loadMessages() {
             const msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             const container = document.getElementById('messagesArea');
@@ -371,7 +328,6 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        // Hız Sınırı (10 saniyede 20 mesaj)
         function verifySpam() {
             const now = Date.now();
             if (now < banEndTime) return false;
@@ -381,7 +337,7 @@
 
             if (spamTimestamps.length > 20) {
                 banEndTime = now + (5 * 60 * 1000);
-                localStorage.setItem('tg_pure_ban', banEndTime);
+                localStorage.setItem('tg_sys_ban', banEndTime);
                 activateSpamBlock();
                 return false;
             }
@@ -405,10 +361,8 @@
             }, 1000);
         }
 
-        // Form Gönderme Yapısı
         document.getElementById('chatForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
             if (!verifySpam()) return;
 
             const nameInput = document.getElementById('userName');
@@ -430,7 +384,6 @@
             }
         });
 
-        // Yönetici Modülü İşlemleri
         function triggerAdminModal() {
             closeDrawer();
             document.getElementById('adminModal').style.display = 'flex';
@@ -446,7 +399,7 @@
                 document.getElementById('adminPanel').style.display = 'block';
                 loadAdminLogs();
             } else {
-                alert('Erişim Reddedildi.');
+                alert('Hatalı Şifre.');
                 closeAdminModal();
             }
         }
@@ -459,10 +412,10 @@
             msgs.slice().reverse().forEach((msg, idx) => {
                 const realIndex = msgs.length - 1 - idx;
                 const div = document.createElement('div');
-                div.style.cssText = "background:rgba(0,0,0,0.2); padding:8px; border-radius:6px; margin-bottom:6px; font-size:12px; display:flex; justify-content:between; align-items:center;";
+                div.style.cssText = "background:rgba(0,0,0,0.2); padding:6px; border-radius:6px; margin-bottom:6px; font-size:12px; display:flex; justify-content:space-between; align-items:center;";
                 div.innerHTML = `
-                    <div style="flex:1;"><strong>${escapeHTML(msg.name)}</strong>: ${msg.text}</div>
-                    <button onclick="removeMsg(${realIndex})" style="background:var(--danger); color:white; width:auto; padding:2px 6px; font-size:10px; margin:0;">Sil</button>
+                    <div style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><strong>${escapeHTML(msg.name)}</strong>: ${msg.text}</div>
+                    <button onclick="removeMsg(${realIndex})" style="background:var(--danger); color:white; border:none; padding:2px 6px; font-size:10px; border-radius:4px; cursor:pointer; margin-left:8px;">Sil</button>
                 `;
                 container.appendChild(div);
             });
@@ -478,17 +431,17 @@
 
         function downloadBackup() {
             const msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            let out = "--- Shadow Chat Veri Yedek Aktarımı ---\n\n";
+            let out = "";
             msgs.forEach(m => out += `${m.name} [${m.time}]: ${m.text.replace(/<br>/g, '\n')}\n---\n`);
             const blob = new Blob([out], {type: 'text/plain;charset=utf-8'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = 'shadow_telegram_backup.txt';
+            a.download = 'backup.txt';
             a.click();
         }
 
         function clearSystem() {
-            if (confirm('Sistemdeki tüm mesaj geçmişini sıfırlamak istiyor musunuz?')) {
+            if (confirm('Tüm mesajları silmek istediğinize emin misiniz?')) {
                 localStorage.removeItem(STORAGE_KEY);
                 loadMessages();
                 closeAdminModal();
@@ -496,7 +449,7 @@
         }
 
         window.onload = () => {
-            const savedBan = localStorage.getItem('tg_pure_ban');
+            const savedBan = localStorage.getItem('tg_sys_ban');
             if (savedBan && Date.now() < parseInt(savedBan)) {
                 banEndTime = parseInt(savedBan);
                 activateSpamBlock();
