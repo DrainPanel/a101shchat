@@ -2,8 +2,8 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shadow Chat — Cyber Network</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shadow Chat</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
         
@@ -18,13 +18,12 @@
             --text-muted: #64748b;
             --danger: #ef4444;
             --success: #10b981;
-            --radius: 16px;
+            --radius: 14px;
         }
 
         * {
             box-sizing: border-box;
             margin: 0; padding: 0;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         body {
@@ -54,13 +53,14 @@
         .app {
             display: flex;
             height: 100vh;
+            width: 100%;
             position: relative;
             backdrop-filter: blur(20px);
         }
 
         /* Sidebar - Fütüristik Efektli */
         .sidebar {
-            width: 290px;
+            width: 280px;
             background: var(--bg-sidebar);
             padding: 24px;
             border-right: 1px solid rgba(255,255,255,0.05);
@@ -68,17 +68,16 @@
             flex-direction: column;
             z-index: 99;
             box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
         }
         
         .sidebar-brand {
             font-size: 24px;
             font-weight: 800;
-            letter-spacing: -0.5px;
             background: linear-gradient(135deg, #a5b4fc, #6366f1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 35px;
-            text-shadow: 0 0 20px var(--accent-glow);
         }
 
         .channel-item {
@@ -90,7 +89,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         /* Chat Bölümü */
@@ -99,16 +97,17 @@
             display: flex;
             flex-direction: column;
             background: var(--bg-chat);
+            height: 100vh;
+            position: relative;
         }
 
         .header {
-            padding: 20px 28px;
+            padding: 18px 24px;
             background: rgba(11, 15, 25, 0.7);
             border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-weight: 600;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 15px;
         }
 
         .menu-toggle {
@@ -123,37 +122,37 @@
         /* Mesaj Alanı ve Kusursuz Yaylanma Animasyonları */
         .messages {
             flex: 1;
-            padding: 28px;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
             scroll-behavior: smooth;
         }
 
         .message {
             opacity: 0;
-            animation: dynamicPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            max-width: 75%;
+            animation: dynamicPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            max-width: 80%;
+            transition: transform 0.2s;
         }
 
         @keyframes dynamicPop {
-            from { opacity: 0; transform: translateY(25px) scale(0.93); filter: blur(4px); }
-            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+            from { opacity: 0; transform: translateY(15px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .msg-meta {
             font-size: 13px;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .msg-user {
             font-weight: 700;
             color: #c084fc;
-            text-shadow: 0 0 10px rgba(192, 132, 252, 0.3);
         }
 
         .msg-time {
@@ -162,33 +161,30 @@
         }
 
         .msg-content {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255,255,255,0.05);
-            padding: 14px 20px;
+            padding: 12px 18px;
             border-radius: 4px var(--radius) var(--radius) var(--radius);
-            line-height: 1.6;
+            line-height: 1.5;
             word-break: break-word;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
-        .message:hover .msg-content {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(99, 102, 241, 0.3);
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
-            transform: translateX(4px);
+        .message:hover {
+            transform: translateX(3px);
         }
 
         /* Giriş ve Form Yapısı */
         .input-area {
-            padding: 24px 28px;
-            background: rgba(11, 15, 25, 0.5);
+            padding: 16px 20px;
+            background: rgba(11, 15, 25, 0.8);
             border-top: 1px solid rgba(255,255,255,0.05);
+            position: relative;
         }
 
         .form-grid {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 10px;
         }
 
         input, textarea {
@@ -196,28 +192,27 @@
             border: 1px solid rgba(255,255,255,0.05);
             color: white;
             border-radius: var(--radius);
-            padding: 16px;
+            padding: 12px 16px;
             font-size: 15px;
             font-family: inherit;
             outline: none;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         input:focus, textarea:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 20px var(--accent-glow), inset 0 2px 4px rgba(0,0,0,0.2);
-            background: #243249;
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
         .input-row {
             display: flex;
-            gap: 14px;
+            gap: 10px;
         }
 
         textarea {
             flex: 1;
             resize: none;
-            height: 54px;
+            height: 48px;
         }
 
         /* Efektli Butonlar */
@@ -225,41 +220,39 @@
             background: linear-gradient(135deg, var(--accent), #4f46e5);
             color: white;
             border: none;
-            padding: 14px 28px;
+            padding: 12px 24px;
             border-radius: var(--radius);
             font-weight: 700;
             font-size: 15px;
             cursor: pointer;
-            box-shadow: 0 4px 15px var(--accent-glow);
-            position: relative;
-            overflow: hidden;
+            transition: transform 0.1s, box-shadow 0.2s;
         }
 
         button:hover {
-            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
-            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--accent-glow);
         }
         
         button:active {
-            transform: translateY(1px) scale(0.98);
+            transform: scale(0.96);
         }
 
         /* Spam Engel Ekranı (Overlay Modu) */
         .cooldown-overlay {
             position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(6, 9, 19, 0.9);
-            backdrop-filter: blur(12px);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(6, 9, 19, 0.95);
+            backdrop-filter: blur(8px);
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             border-radius: var(--radius);
             z-index: 10;
-            animation: fadeIn 0.3s ease;
+            text-align: center;
+            padding: 10px;
         }
 
-        /* Modern Cam Efektli Modallar */
+        /* Modallar */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(3, 7, 18, 0.85);
@@ -271,57 +264,66 @@
         .modal-content {
             background: #0f172a;
             border: 1px solid rgba(255,255,255,0.08);
-            padding: 36px;
-            border-radius: 24px;
+            padding: 30px;
+            border-radius: 20px;
             width: 90%;
-            max-width: 450px;
+            max-width: 420px;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);
-            animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        @keyframes modalPop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        /* Mobil Optimizasyonları */
+        /* Mobil Optimizasyonları (Kusursuz Responsive) */
         @media (max-width: 768px) {
             .sidebar {
-                position: absolute; left: -290px; top: 0; bottom: 0;
-                transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                position: absolute; 
+                left: 0; top: 0; bottom: 0;
+                transform: translateX(-100%);
             }
-            .sidebar.active { left: 0; }
-            .menu-toggle { display: block; }
-            .message { max-width: 90%; }
+            .sidebar.active { 
+                transform: translateX(0); 
+            }
+            .menu-toggle { 
+                display: block; 
+            }
+            .message { 
+                max-width: 90%; 
+            }
+            .header {
+                padding: 14px 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="app">
+        <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-brand">Shadow Chat</div>
             <div class="channel-list" style="flex:1;">
                 <div class="channel-item"><span>#</span> genel-sohbet</div>
             </div>
-            <button onclick="showAdminModal()" style="width:100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); box-shadow:none;">Yönetici Paneli</button>
+            <button onclick="showAdminModal()" style="width:100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">Yönetici Paneli</button>
         </div>
 
+        <!-- Chat Alanı -->
         <div class="chat">
             <div class="header">
-                <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                <button class="menu-toggle" onclick="toggleSidebar(event)">☰</button>
                 <div style="font-size:18px; font-weight:700;"># genel-sohbet</div>
-                <div style="font-size: 13px; color: var(--success); font-weight: 600; background:rgba(16,185,129,0.1); padding:6px 12px; border-radius:20px;">● Aktif Akış</div>
             </div>
             
             <div id="messages" class="messages"></div>
             
-            <div class="input-area" style="position:relative;">
+            <div class="input-area">
+                <!-- Spam Koruma Kalkanı -->
                 <div id="cooldownOverlay" class="cooldown-overlay">
-                    <h3 style="color:var(--danger); margin-bottom:8px; font-weight:700;">⚠️ Erişim Engellendi (Spam Koruması)</h3>
-                    <p style="color:var(--text-muted);">Çok hızlı mesaj gönderiyorsun! Kalan Süre: <span id="cooldownTimer" style="color:white; font-weight:700;">05:00</span></p>
+                    <h4 style="color:var(--danger); margin-bottom:4px; font-weight:700;">⚠️ Spam Engeli</h4>
+                    <p style="color:var(--text-muted); font-size:13px;">Çok hızlısın! Kalan Süre: <span id="cooldownTimer" style="color:white; font-weight:700;">05:00</span></p>
                 </div>
 
                 <form id="msgForm" class="form-grid">
-                    <input type="text" id="name" placeholder="Sistemdeki Kimliğin (Opsiyonel)" value="Anonim">
+                    <input type="text" id="name" placeholder="İsim (Opsiyonel)" value="Anonim">
                     <div class="input-row">
-                        <textarea id="message" placeholder="Güvenli ağa bir mesaj bırak..." required></textarea>
+                        <textarea id="message" placeholder="Mesaj yaz..." required></textarea>
                         <button type="submit">Gönder</button>
                     </div>
                 </form>
@@ -329,21 +331,22 @@
         </div>
     </div>
 
+    <!-- Admin Modal -->
     <div id="adminModal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-bottom:20px; font-size:24px;">Giriş Yetkilendirmesi</h2>
-            <input type="text" id="username" value="admin" style="width:100%; margin-bottom:14px;">
-            <input type="password" id="password" placeholder="Sistem Şifresi" style="width:100%; margin-bottom:24px;">
-            <button onclick="loginAdmin()" style="width:100%; margin-bottom:12px;">Yetkilendir</button>
-            <button onclick="closeModal()" style="background:#334155; width:100%; box-shadow:none;">İptal Et</button>
+            <h2 style="margin-bottom:20px; font-size:22px;">Giriş Yetkilendirmesi</h2>
+            <input type="text" id="username" value="admin" style="width:100%; margin-bottom:12px;">
+            <input type="password" id="password" placeholder="Şifre" style="width:100%; margin-bottom:24px;">
+            <button onclick="loginAdmin()" style="width:100%; margin-bottom:12px;">Giriş Yap</button>
+            <button onclick="closeModal()" style="background:#334155; width:100%;">İptal</button>
             
             <div id="adminPanel" style="display:none; margin-top:24px; border-top:1px solid rgba(255,255,255,0.1); padding-top:24px;">
-                <h3 style="margin-bottom:16px;">Veri & Akış Yönetimi</h3>
+                <h3 style="margin-bottom:16px; font-size:16px;">Veri Yönetimi</h3>
                 <div style="display:flex; gap:12px; margin-bottom:16px;">
-                    <button onclick="exportToTxt()" style="background:var(--success); flex:1; box-shadow:none;">Günlükleri İndir</button>
-                    <button onclick="clearAll()" style="background:var(--danger); flex:1; box-shadow:none;">Ağı Temizle</button>
+                    <button onclick="exportToTxt()" style="background:var(--success); flex:1;">TXT İndir</button>
+                    <button onclick="clearAll()" style="background:var(--danger); flex:1;">Tümünü Sil</button>
                 </div>
-                <div id="adminMessages" style="max-height:240px; overflow-y:auto;"></div>
+                <div id="adminMessages" style="max-height:200px; overflow-y:auto;"></div>
             </div>
         </div>
     </div>
@@ -351,13 +354,13 @@
     <script>
         const STORAGE_KEY = 'shadowMessages';
         
-        // Spam Takip Değişkenleri
         let messageTimestamps = []; 
         let isBanned = false;
         let banEndTime = 0;
         let countdownInterval;
 
-        function toggleSidebar() {
+        function toggleSidebar(e) {
+            e.stopPropagation();
             document.getElementById('sidebar').classList.toggle('active');
         }
 
@@ -365,34 +368,28 @@
             return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
         }
 
-        // Akıllı Spam Filtresi Fonksiyonu
+        // Akıllı Spam Filtresi
         function checkSpamLimit() {
             const now = Date.now();
             
-            // Eğer zaten banlıysa kontrol et
             if (isBanned) {
                 if (now >= banEndTime) {
-                    // Ban süresi bitti
                     isBanned = false;
                     localStorage.removeItem('shadow_ban_time');
                     document.getElementById('cooldownOverlay').style.display = 'none';
                     clearInterval(countdownInterval);
                 } else {
-                    return false; // Hala engelli
+                    return false;
                 }
             }
 
-            // Son 10 saniye dışındaki eski kayıtları temizle
             messageTimestamps = messageTimestamps.filter(timestamp => now - timestamp < 10000);
-            
-            // Yeni mesaj zamanını ekle
             messageTimestamps.push(now);
 
-            // 10 saniye içinde 20 mesajı geçtiyse banla
             if (messageTimestamps.length > 20) {
                 isBanned = true;
-                banEndTime = now + (5 * 60 * 1000); // 5 dakika ekle
-                localStorage.setItem('shadow_ban_time', banEndTime); // Sayfa yenilense de gitmesin
+                banEndTime = now + (5 * 60 * 1000); 
+                localStorage.setItem('shadow_ban_time', banEndTime);
                 startBanCountdown();
                 return false;
             }
@@ -402,7 +399,6 @@
 
         function startBanCountdown() {
             document.getElementById('cooldownOverlay').style.display = 'flex';
-            
             if(countdownInterval) clearInterval(countdownInterval);
 
             countdownInterval = setInterval(() => {
@@ -422,7 +418,6 @@
             }, 1000);
         }
 
-        // Sayfa ilk açıldığında ban kontrolü yap
         function checkExistingBan() {
             const savedBan = localStorage.getItem('shadow_ban_time');
             if (savedBan) {
@@ -445,7 +440,6 @@
             msgs.forEach((msg, i) => {
                 const div = document.createElement('div');
                 div.className = 'message';
-                div.style.animationDelay = `${i * 0.02}s`;
                 
                 div.innerHTML = `
                     <div class="msg-meta">
@@ -459,25 +453,28 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        document.getElementById('msgForm').addEventListener('submit', e => {
+        // Form Gönderme İşlemi Tamamen Düzeltildi
+        document.getElementById('msgForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Önce spam kalkanından geçiyor mu bak
             if (!checkSpamLimit()) return;
 
-            const name = document.getElementById('name').value;
-            const text = document.getElementById('message').value.trim();
+            const nameInput = document.getElementById('name');
+            const messageInput = document.getElementById('message');
+            
+            const name = nameInput.value.trim() || 'Anonim';
+            const text = messageInput.value.trim();
             
             if (text) {
                 let msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
                 msgs.push({
-                    name: name.trim() || 'Anonim',
+                    name: name,
                     text: escapeHTML(text).replace(/\n/g, '<br>'),
                     time: new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'})
                 });
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
                 loadMessages();
-                document.getElementById('message').value = '';
+                messageInput.value = '';
             }
         });
 
@@ -504,13 +501,13 @@
             msgs.slice().reverse().forEach((msg, idx) => {
                 const realIndex = msgs.length - 1 - idx;
                 const div = document.createElement('div');
-                div.style.cssText = "background:rgba(255,255,255,0.02); padding:12px; border-radius:8px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.05);";
+                div.style.cssText = "background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; margin-bottom:8px; border:1px solid rgba(255,255,255,0.05);";
                 div.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
                         <strong>${escapeHTML(msg.name)}</strong>
-                        <button onclick="deleteMsg(${realIndex})" style="background:var(--danger); padding:4px 10px; font-size:11px; border-radius:6px; box-shadow:none;">Kaldır</button>
+                        <button onclick="deleteMsg(${realIndex})" style="background:var(--danger); padding:2px 8px; font-size:11px;">Sil</button>
                     </div>
-                    <div style="color:var(--text-muted); font-size:13px;">${msg.text}</div>
+                    <div style="color:var(--text-muted); font-size:13px; margin-top:4px;">${msg.text}</div>
                 `;
                 container.appendChild(div);
             });
@@ -530,4 +527,39 @@
             msgs.forEach(m => txt += `${m.name} [${m.time}]: ${m.text.replace(/<br>/g, '\n')}\n---\n`);
             const blob = new Blob([txt], {type: 'text/plain;charset=utf-8'});
             const a = document.createElement('a');
-            a.href = UR
+            a.href = URL.createObjectURL(blob);
+            a.download = 'chat_logs.txt';
+            a.click();
+        }
+
+        function clearAll() {
+            if (confirm('Tüm verileri silmek istediğine emin misin?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                loadMessages();
+                loadAdminMessages();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('adminModal').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('password').value = '';
+        }
+
+        // Mobil Tıklama Kontrolü
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+                if (!sidebar.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        window.onload = () => {
+            checkExistingBan();
+            loadMessages();
+        };
+    </script>
+</body>
+</html>
