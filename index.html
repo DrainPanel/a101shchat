@@ -3,179 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mesaj Panosu</title>
+    <title>Shadow Chat</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f4; }
-        h1 { color: #333; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        textarea, input { width: 100%; padding: 10px; margin: 10px 0; }
-        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        .message { border-bottom: 1px solid #ddd; padding: 15px 0; }
-        .admin-btn { background: #28a745; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        
+        body {
+            margin: 0; padding: 0; font-family: 'Inter', sans-serif;
+            background: #0f0f0f; color: #dcddde; height: 100vh; overflow: hidden;
+        }
+        .app {
+            display: flex; height: 100vh;
+        }
+        .sidebar {
+            width: 240px; background: #202225; padding: 20px; border-right: 1px solid #292b2f;
+            animation: slideIn 0.4s ease;
+        }
+        .chat {
+            flex: 1; display: flex; flex-direction: column; background: #36393f;
+        }
+        .header {
+            padding: 15px 20px; background: #2f3136; border-bottom: 1px solid #292b2f;
+            font-weight: 600; font-size: 18px;
+        }
+        .messages {
+            flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;
+        }
+        .message {
+            opacity: 0; animation: fadeInUp 0.4s forwards;
+            max-width: 70%;
+        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+        
+        .msg-content {
+            background: #292b2f; padding: 12px 16px; border-radius: 8px; display: inline-block;
+        }
+        .input-area {
+            padding: 15px; background: #2f3136; border-top: 1px solid #292b2f;
+        }
+        input, textarea {
+            background: #40444b; border: none; color: white; border-radius: 8px; padding: 12px;
+            width: 100%; font-size: 16px;
+        }
+        button {
+            background: #5865f2; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover { background: #4752c4; transform: scale(1.05); }
+        
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .modal-content {
+            background: #2f3136; padding: 30px; border-radius: 12px; width: 380px; text-align: center;
+            animation: popIn 0.3s;
+        }
+        @keyframes popIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Yazı Yaz - Misafir Defteri</h1>
-        
-        <!-- Mesaj Bırakma Formu -->
-        <form id="messageForm">
-            <input type="text" id="name" placeholder="İsim (opsiyonel)" value="Anonim">
-            <textarea id="message" rows="5" placeholder="Mesajını yaz..." required></textarea>
-            <button type="submit">Gönder</button>
-        </form>
+    <div class="app">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2 style="color:#5865f2;">🔥 Shadow Chat</h2>
+            <p style="color:#72767d; margin:20px 0;">Genel Sohbet</p>
+            <button onclick="showAdminModal()" style="width:100%; margin-top:20px;">👑 Admin Panel</button>
+        </div>
 
-        <hr>
-        <button onclick="showAdmin()" class="admin-btn">Admin Panel</button>
-
-        <!-- Tüm Mesajlar (Ziyaretçiler görebilir) -->
-        <h2>Tüm Mesajlar</h2>
-        <div id="messages"></div>
+        <!-- Chat Area -->
+        <div class="chat">
+            <div class="header">🟢 Herkesin Yazabildiği Alan</div>
+            <div id="messages" class="messages"></div>
+            
+            <div class="input-area">
+                <form id="msgForm">
+                    <input type="text" id="name" placeholder="İsim (opsiyonel)" value="Anonim" style="margin-bottom:8px;">
+                    <div style="display:flex; gap:10px;">
+                        <textarea id="message" rows="2" placeholder="Mesaj yaz..." required></textarea>
+                        <button type="submit">Gönder</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- Admin Modal -->
-    <div id="adminModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7);">
-        <div style="background:white; margin:50px auto; padding:20px; max-width:700px; border-radius:8px;">
-            <h2>Admin Giriş</h2>
-            <input type="text" id="username" placeholder="Kullanıcı: admin" value="admin"><br><br>
-            <input type="password" id="password" placeholder="Şifre: 123456" value="123456"><br><br>
-            <button onclick="loginAdmin()">Giriş Yap</button>
-            <button onclick="closeModal()">Kapat</button>
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <h2>👑 Admin Panel</h2>
+            <input type="text" id="username" placeholder="Kullanıcı adı" value="admin"><br><br>
+            <input type="password" id="password" placeholder="Şifre"><br><br>
+            <button onclick="loginAdmin()" style="width:100%; margin:10px 0;">Giriş Yap</button>
+            <button onclick="closeModal()" style="background:#72767d; width:100%;">Kapat</button>
             
-            <div id="adminPanel" style="display:none; margin-top:20px;">
-                <h2>Admin Panel - Tüm Mesajlar</h2>
-                <button onclick="exportToTxt()">TXT İndir</button>
-                <button onclick="clearAll()">Tümünü Sil</button>
-                <div id="adminMessages"></div>
-                <button onclick="logoutAdmin()">Çıkış</button>
+            <div id="adminPanel" style="display:none; margin-top:20px; text-align:left;">
+                <h3>Tüm Mesajlar</h3>
+                <button onclick="exportToTxt()" style="background:#43b581; margin:5px;">TXT İndir</button>
+                <button onclick="clearAll()" style="background:#f04747;">Tümünü Sil</button>
+                <div id="adminMessages" style="max-height:400px; overflow-y:auto; margin-top:15px;"></div>
             </div>
         </div>
     </div>
 
     <script>
-        const STORAGE_KEY = 'guestMessages';
+        const STORAGE_KEY = 'shadowMessages';
+        let isAdminLogged = false;
 
         function loadMessages() {
-            const messages = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             const container = document.getElementById('messages');
             container.innerHTML = '';
-            
-            messages.reverse().forEach((msg, index) => {
+            msgs.forEach((msg, i) => {
                 const div = document.createElement('div');
                 div.className = 'message';
+                div.style.animationDelay = (i * 0.05) + 's';
                 div.innerHTML = `
-                    <strong>${msg.name}</strong> - ${msg.time}<br>
-                    ${msg.text}
+                    <strong style="color:#00b0f4;">\( {msg.name}</strong> <span style="color:#72767d; font-size:0.8em;"> \){msg.time}</span>
+                    <div class="msg-content">${msg.text}</div>
                 `;
                 container.appendChild(div);
             });
+            container.scrollTop = container.scrollHeight;
         }
 
         function saveMessage(name, text) {
-            const messages = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            messages.push({
+            let msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            msgs.push({
                 name: name || 'Anonim',
-                text: text,
+                text: text.replace(/\n/g, '<br>'),
                 time: new Date().toLocaleString('tr-TR')
             });
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
             loadMessages();
         }
 
-        // Form submit
-        document.getElementById('messageForm').addEventListener('submit', function(e) {
+        document.getElementById('msgForm').addEventListener('submit', e => {
             e.preventDefault();
             const name = document.getElementById('name').value;
-            const message = document.getElementById('message').value.trim();
-            
-            if (message) {
-                saveMessage(name, message);
+            const text = document.getElementById('message').value.trim();
+            if (text) {
+                saveMessage(name, text);
                 document.getElementById('message').value = '';
-                alert('Mesajın gönderildi!');
             }
         });
 
-        // Admin
-        let isAdmin = false;
-
-        function showAdmin() {
-            document.getElementById('adminModal').style.display = 'block';
-            document.getElementById('adminPanel').style.display = 'none';
+        function showAdminModal() {
+            document.getElementById('adminModal').style.display = 'flex';
+            // Senin için otomatik şifre doldur (diğerleri boş görür)
+            setTimeout(() => {
+                document.getElementById('password').value = 'shadow2026';
+            }, 300);
         }
 
         function loginAdmin() {
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
             
-            if (user === 'admin' && pass === '123456') {
-                isAdmin = true;
+            if (user === 'admin' && pass === 'shadow2026') {
+                isAdminLogged = true;
                 document.getElementById('adminPanel').style.display = 'block';
                 loadAdminMessages();
             } else {
-                alert('Yanlış kullanıcı/şifre!');
+                alert('❌ Erişim reddedildi!');
+                closeModal();
             }
         }
 
         function loadAdminMessages() {
-            const messages = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             const container = document.getElementById('adminMessages');
             container.innerHTML = '';
-            
-            messages.reverse().forEach((msg, index) => {
+            msgs.reverse().forEach((msg, idx) => {
+                const realIndex = msgs.length - 1 - idx;
                 const div = document.createElement('div');
-                div.className = 'message';
+                div.style.marginBottom = '15px';
                 div.innerHTML = `
                     <strong>${msg.name}</strong> - ${msg.time}<br>
-                    ${msg.text}
-                    <br><button onclick="deleteMessage(${messages.length - 1 - index})">Sil</button>
+                    <span style="color:#dcddde;">${msg.text}</span><br>
+                    <button onclick="deleteMsg(${realIndex})" style="background:#f04747; padding:4px 10px; font-size:12px;">Sil</button>
                 `;
                 container.appendChild(div);
             });
         }
 
-        function deleteMessage(index) {
-            let messages = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            messages.splice(index, 1);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+        window.deleteMsg = function(index) {
+            let msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            msgs.splice(index, 1);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
             loadMessages();
             loadAdminMessages();
+        };
+
+        function exportToTxt() {
+            const msgs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            let txt = "Shadow Chat - Tüm Mesajlar\n\n";
+            msgs.forEach(m => txt += `${m.name} - \( {m.time}\n \){m.text}\n\n---\n\n`);
+            const blob = new Blob([txt], {type: 'text/plain'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'shadow_chat_mesajlar.txt';
+            a.click();
         }
 
         function clearAll() {
-            if (confirm('Tüm mesajları silmek istediğinden emin misin?')) {
+            if (confirm('Tüm mesajlar silinsin mi?')) {
                 localStorage.removeItem(STORAGE_KEY);
                 loadMessages();
                 loadAdminMessages();
             }
         }
 
-        function exportToTxt() {
-            const messages = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            let text = 'Misafir Defteri\n\n';
-            messages.forEach(msg => {
-                text += `${msg.name} - \( {msg.time}\n \){msg.text}\n\n---\n\n`;
-            });
-            
-            const blob = new Blob([text], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'mesajlar.txt';
-            a.click();
-        }
-
-        function logoutAdmin() {
-            isAdmin = false;
-            closeModal();
-        }
-
         function closeModal() {
             document.getElementById('adminModal').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('password').value = '';
         }
 
-        // Sayfa yüklenince mesajları göster
-        window.onload = loadMessages;
+        window.onload = () => {
+            loadMessages();
+        };
     </script>
 </body>
-  </html>
+</html>
